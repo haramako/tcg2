@@ -1,7 +1,8 @@
-require "assert"
+require "./assert"
 
-require "game"
+require "./game"
+require "./rule"
 
-require "test_game"
+require "./test_game"
 
 report

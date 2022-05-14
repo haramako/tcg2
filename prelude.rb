@@ -66,5 +66,3 @@ module Kernel
     args.each { |v| puts v.inspect }
   end
 end
-
-require "main"
