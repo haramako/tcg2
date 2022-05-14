@@ -18,13 +18,13 @@ class PlayingCard < Game::Entity
     spade: 3,
   }
 
-  NUMBER_NAMES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+  NUMBER_NAMES = [nil, "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
   def initialize(board, suit, number)
     super board
     @suit = suit
     @number = number
-    @name = "#{SUIT_NAME[@suit]}#{number}"
+    @name = "#{SUIT_NAME[@suit]}#{NUMBER_NAMES[number]}"
   end
 
   def render

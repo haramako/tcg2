@@ -1,11 +1,31 @@
-class Poker
-  attr_reader :board, :hands, :stack, :cards
+class PokerBoard < Game::Board
+  attr_accessor :cur_player, :state
+  attr_reader :stack, :pile, :hands, :cards
 
   def initialize
-    @board = Game::Board.new
-    @stack = Game::Entity.new(@board)
-    @hands = (0..1).map { |i| Game::Entity.new(@board) }
-    @cards = PlayingCard.make_cards(@board)
+    super
+    @stack = Game::PlaceHolder.new(self, :stack, is_stack: true)
+    @pile = Game::PlaceHolder.new(self, :pile, is_stack: true)
+    @hands = (0..1).map { |i| Game::PlaceHolder.new(self, :"hands#{i}") }
+    @cards = PlayingCard.make_cards(self)
+    @cur_player = 0
+    @state = :start
+  end
+
+  def change_player
+    @cur_player = 1 - @cur_player
+  end
+end
+
+class PokerRule
+  attr_reader :board, :hands, :stack, :cards, :pile
+
+  def initialize
+    @board = PokerBoard.new
+    @stack = @board.stack
+    @pile = @board.pile
+    @hands = @board.hands
+    @cards = @board.cards
     @matcher = PokerMatcher.new
 
     @cards.each do |c|
@@ -13,12 +33,60 @@ class Poker
     end
   end
 
-  def find_card(suit, number)
-    @cards.find { |c| c.suit == suit && c.number == number }
+  def play(cmd)
+    self.send(:"_do_#{cmd[:type]}", cmd)
   end
 
-  def draw(player_idx, i)
-    @board.stack.children[0].move(@hands[player_idx])
+  def _do_start(cmd)
+    5.times {
+      draw(0)
+      draw(1)
+    }
+    @board.cur_player = 0
+    @board.state = :drawing
+  end
+
+  def _do_discard(cmd)
+    check_state(:drawing)
+    cards = _ids(cmd[:cards])
+    cards.each do |card|
+      must_owner(board.cur_player, card)
+      card.move(@pile)
+    end
+    draw(@board.cur_player, cards.size)
+    if @board.cur_player == 0
+      @board.change_player
+    else
+      @board.state = :bet
+    end
+  end
+
+  def _do_reset(cmd)
+    @cards.each do |c|
+      c.move(@stack)
+    end
+  end
+
+  def check_state(*state_list)
+    raise "Invalid state #{@board.state}" unless state_list.include?(@board.state)
+  end
+
+  def _ids(ids)
+    ids.map { |id| @board.entities[id] }
+  end
+
+  def must_owner(player_idx, card)
+    raise "Player #{player_idx} is not owner of #{card}" unless owner?(player_idx, card)
+  end
+
+  def owner?(player_idx, card)
+    card.parent == @hands[player_idx]
+  end
+
+  def draw(player_idx, num = 1)
+    num.times do
+      @stack.children.first.move(@hands[player_idx])
+    end
   end
 
   def match(cards)
@@ -92,4 +160,3 @@ class PokerMatcher
     end
   end
 end
-

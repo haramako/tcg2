@@ -21,7 +21,7 @@ module Game
 
   class Board
     attr_reader :root
-    attr_reader :cards, :places # readonly
+    attr_reader :entities # readonly
 
     def initialize
       @next_entity_id = 0
@@ -98,10 +98,14 @@ module Game
 
     def _render
       out = { id: @id, **render, cls: self.class.name }
-      unless children.empty?
+      if render_children? && !children.empty?
         out[:children] = @children.map { |c| c._render }
       end
       out
+    end
+
+    def render_children?
+      true
     end
 
     def render
@@ -109,12 +113,25 @@ module Game
     end
   end
 
-  class CardPlace < Entity
-    attr_reader :name
+  class PlaceHolder < Entity
+    attr_reader :name, :is_stack
 
-    def initialize(board, name)
+    def initialize(board, name, is_stack: false)
       super board
       @name = name
+      @is_stack = is_stack
+    end
+
+    def render_children?
+      !@is_stack
+    end
+
+    def render
+      if @is_stack
+        { name: @name, count: children.size }
+      else
+        { name: @name }
+      end
     end
   end
 

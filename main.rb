@@ -1,4 +1,5 @@
 require "./assert"
+require "pp" rescue nil
 
 require "./game"
 require "./playing_cards"

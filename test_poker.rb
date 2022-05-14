@@ -7,7 +7,7 @@ def cards(names)
 end
 
 assert("poker matcher") do
-  $game = game = Poker.new
+  $game = game = PokerRule.new
 
   matcher = PokerMatcher.new
   assert_equal([:pair, [4, 2]], matcher.match(cards("D1 D2 D3 D4 H4")))
@@ -22,5 +22,14 @@ assert("poker matcher") do
 end
 
 assert("poker") do
-  $game = game = Poker.new
+  $game = game = PokerRule.new
+
+  game.play(type: :start)
+  game.play(type: :discard, cards: [game.hands[0].children[0].id])
+  game.play(type: :discard, cards: game.hands[1].children[0..1].map(&:id))
+
+  game.play(type: :reset)
+  game.play(type: :start)
+
+  game.board.dump
 end
