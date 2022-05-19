@@ -1,9 +1,7 @@
-include Game
-
 def create_board(place_count, card_count)
-  b = Board.new
-  places = (0...place_count).map { |i| PlaceHolder.new(b, "place#{i}") }
-  cards = (0...card_count).map { |i| Card.new(b, "card#{i}") }
+  b = Game::Board.new
+  places = (0...place_count).map { |i| Game::PlaceHolder.new(b, "place#{i}") }
+  cards = (0...card_count).map { |i| Game::Card.new(b, "card#{i}") }
   [b, places, cards]
 end
 

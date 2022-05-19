@@ -1,5 +1,5 @@
 def c(name)
-  $game.cards.find { |x| x.name == name }
+  $game.board.cards.find { |x| x.name == name }
 end
 
 def cards(names)
@@ -23,13 +23,25 @@ end
 
 assert("poker") do
   $game = game = PokerRule.new
+  b = game.board
 
   game.play(type: :start)
-  game.play(type: :discard, cards: [game.hands[0].children[0].id])
-  game.play(type: :discard, cards: game.hands[1].children[0..1].map(&:id))
+  game.play(type: :select, card: b.hands[0].children[0].id)
+  game.play(type: :select, card: b.hands[0].children[1].id)
+  game.play(type: :select, card: b.hands[0].children[1].id)
+  game.play(type: :discard)
 
-  game.play(type: :reset)
-  game.play(type: :start)
+  assert_equal(1, game.board.cur_player)
+  assert_equal(1, game.board.pile.children.size)
+
+  game.play(type: :select, card: b.hands[1].children[0].id)
+  game.play(type: :select, card: b.hands[1].children[1].id)
+  game.play(type: :discard)
+
+  assert_equal(:bet, game.board.state)
+
+  #game.play(type: :reset)
+  #game.play(type: :start)
 
   game.board.dump
 end

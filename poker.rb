@@ -8,6 +8,9 @@ class PokerBoard < Game::Board
     @pile = Game::PlaceHolder.new(self, :pile, is_stack: true)
     @hands = (0..1).map { |i| Game::PlaceHolder.new(self, :"hands#{i}") }
     @cards = PlayingCard.make_cards(self)
+    @cards.each do |c|
+      c.move(@stack)
+    end
     @cur_player = 0
     @state = :start
   end
@@ -22,15 +25,7 @@ class PokerRule
 
   def initialize
     @board = PokerBoard.new
-    @stack = @board.stack
-    @pile = @board.pile
-    @hands = @board.hands
-    @cards = @board.cards
     @matcher = PokerMatcher.new
-
-    @cards.each do |c|
-      c.move(@stack)
-    end
   end
 
   def play(cmd)
@@ -46,14 +41,23 @@ class PokerRule
     @board.state = :drawing
   end
 
+  def _do_select(cmd)
+    validate_state(:drawing)
+    card = _ids(cmd[:card])
+    card.selected = !card.selected
+  end
+
   def _do_discard(cmd)
-    check_state(:drawing)
-    cards = _ids(cmd[:cards])
-    cards.each do |card|
-      must_owner(board.cur_player, card)
-      card.move(@pile)
+    validate_state(:drawing)
+    hand = @board.hands[@board.cur_player]
+    discading_cards = hand.children.select { |c| c.selected }
+    discading_cards.each do |card|
+      if card.selected
+        card.selected = false
+        card.move(@board.pile)
+      end
     end
-    draw(@board.cur_player, cards.size)
+    draw(@board.cur_player, discading_cards.size)
     if @board.cur_player == 0
       @board.change_player
     else
@@ -63,19 +67,23 @@ class PokerRule
 
   def _do_reset(cmd)
     @cards.each do |c|
-      c.move(@stack)
+      c.move(board.stack)
     end
   end
 
-  def check_state(*state_list)
+  def validate_state(*state_list)
     raise "Invalid state #{@board.state}" unless state_list.include?(@board.state)
   end
 
   def _ids(ids)
-    ids.map { |id| @board.entities[id] }
+    if ids.is_a?(Array)
+      ids.map { |id| @board.entities[id] }
+    else
+      @board.entities[ids]
+    end
   end
 
-  def must_owner(player_idx, card)
+  def validate_owner(player_idx, card)
     raise "Player #{player_idx} is not owner of #{card}" unless owner?(player_idx, card)
   end
 
@@ -85,7 +93,7 @@ class PokerRule
 
   def draw(player_idx, num = 1)
     num.times do
-      @stack.children.first.move(@hands[player_idx])
+      @board.stack.children.first.move(@board.hands[player_idx])
     end
   end
 

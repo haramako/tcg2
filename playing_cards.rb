@@ -1,4 +1,5 @@
 class PlayingCard < Game::Entity
+  attr_accessor :selected
   attr_reader :suit, :number, :name
 
   SUITS = [:heart, :spade, :crover, :dia]
@@ -25,10 +26,11 @@ class PlayingCard < Game::Entity
     @suit = suit
     @number = number
     @name = "#{SUIT_NAME[@suit]}#{NUMBER_NAMES[number]}"
+    @selected = false
   end
 
   def render
-    { kind: name }
+    { kind: name, selected: selected }
   end
 
   def to_s

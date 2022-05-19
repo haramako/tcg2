@@ -1,5 +1,5 @@
 require "./assert"
-require "pp" rescue nil
+require "pp" if RUBY_ENGINE == "ruby"
 
 require "./game"
 require "./playing_cards"
