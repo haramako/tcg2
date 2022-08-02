@@ -79,8 +79,10 @@ module Game
   class Entity
     attr_reader :id, :board, :parent
     attr_reader :children # readonly
+    attr_accessor :pos
 
     def initialize(board, is_root = false)
+      @pos = [0, 0]
       @board = board
       @children = []
       if is_root
@@ -111,15 +113,28 @@ module Game
     def render
       {}
     end
+
+    def redraw_all(view)
+      redraw(view)
+      children.each do |c|
+        c.redraw_all(view)
+      end
+    end
+
+    def redraw(view)
+    end
   end
 
   class PlaceHolder < Entity
     attr_reader :name, :is_stack
 
+    attr_accessor :slide
+
     def initialize(board, name, is_stack: false)
       super board
       @name = name
       @is_stack = is_stack
+      @slide = [0, 0]
     end
 
     def render_children?
@@ -131,6 +146,12 @@ module Game
         { name: @name, count: children.size }
       else
         { name: @name }
+      end
+    end
+
+    def redraw(view)
+      children.each.with_index do |c, i|
+        c.pos = [pos[0] + slide[0] * i, pos[1] + slide[1] * i]
       end
     end
   end

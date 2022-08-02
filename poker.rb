@@ -7,12 +7,21 @@ class PokerBoard < Game::Board
     @stack = Game::PlaceHolder.new(self, :stack, is_stack: true)
     @pile = Game::PlaceHolder.new(self, :pile, is_stack: true)
     @hands = (0..1).map { |i| Game::PlaceHolder.new(self, :"hands#{i}") }
+
     @cards = PlayingCard.make_cards(self)
     @cards.each do |c|
       c.move(@stack)
     end
     @cur_player = 0
     @state = :start
+
+    @stack.pos = [-300, 0]
+    @stack.slide = [1, -1]
+    @pile.pos = [300, 0]
+    @hands[0].pos = [0, -240]
+    @hands[0].slide = [30, 0]
+    @hands[1].pos = [0, 240]
+    @hands[1].slide = [30, 0]
   end
 
   def change_player
@@ -29,7 +38,8 @@ class PokerRule
   end
 
   def play(cmd)
-    self.send(:"_do_#{cmd[:type]}", cmd)
+    p cmd
+    self.send(:"_do_#{cmd.type}", cmd)
   end
 
   def _do_start(cmd)
@@ -43,7 +53,7 @@ class PokerRule
 
   def _do_select(cmd)
     validate_state(:drawing)
-    card = _ids(cmd[:card])
+    card = _ids(cmd.card)
     card.selected = !card.selected
   end
 

@@ -21,22 +21,35 @@ assert("poker matcher") do
   # game.board.dump
 end
 
+def make_cmd(name, *rest)
+  r = Struct.new(name, *rest)
+  r.define_method(:type) do name.downcase end
+  return r
+end
+
+module Cmd
+  Start = make_cmd("Start", :card)
+  Select = make_cmd("Select", :card)
+  Discard = make_cmd("Discard")
+end
+
+include Cmd
 assert("poker") do
   $game = game = PokerRule.new
   b = game.board
 
-  game.play(type: :start)
-  game.play(type: :select, card: b.hands[0].children[0].id)
-  game.play(type: :select, card: b.hands[0].children[1].id)
-  game.play(type: :select, card: b.hands[0].children[1].id)
-  game.play(type: :discard)
+  game.play Start[]
+  game.play Select[b.hands[0].children[0].id]
+  game.play Select[b.hands[0].children[1].id]
+  game.play Select[b.hands[0].children[1].id]
+  game.play Discard[]
 
   assert_equal(1, game.board.cur_player)
   assert_equal(1, game.board.pile.children.size)
 
-  game.play(type: :select, card: b.hands[1].children[0].id)
-  game.play(type: :select, card: b.hands[1].children[1].id)
-  game.play(type: :discard)
+  game.play(Select[b.hands[1].children[0].id])
+  game.play(Select[b.hands[1].children[1].id])
+  game.play(Discard[])
 
   assert_equal(:bet, game.board.state)
 
