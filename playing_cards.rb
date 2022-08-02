@@ -62,6 +62,6 @@ class PlayingCard < Game::Entity
   def redraw(view)
     c = view.create("Card", @id)
     c.redraw(@name)
-    c.moveto(@pos[0], @pos[1], 1.0)
+    c.move_to(@pos[0], @pos[1], 1.0)
   end
 end

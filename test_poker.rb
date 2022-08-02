@@ -28,7 +28,7 @@ def make_cmd(name, *rest)
 end
 
 module Cmd
-  Start = make_cmd("Start", :card)
+  Start = make_cmd("Start")
   Select = make_cmd("Select", :card)
   Discard = make_cmd("Discard")
 end
