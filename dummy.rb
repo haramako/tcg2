@@ -25,13 +25,13 @@ module Dummy
       super
       @stack = Game::PlaceHolder.new(self, :stack, is_stack: true)
       @pile = Game::PlaceHolder.new(self, :pile, is_stack: true)
-      @hands = Game::PlaceHolder.new(self, :hands)
       @fields = []
       7.times do |i|
         f = Game::PlaceHolder.new(self, :"field#{i}")
         f.pos = [-400 + i * 130, 0]
         @fields << f
       end
+      @hands = Game::PlaceHolder.new(self, :hands)
 
       @cards = PlayingCard.make_cards(self)
       @cards.each do |c|
@@ -45,7 +45,7 @@ module Dummy
 
       @pile.pos = [300, 200]
 
-      @hands.pos = [0, -240]
+      @hands.pos = [-400, -240]
       @hands.slide = [110, 0]
     end
   end
@@ -90,7 +90,22 @@ module Dummy
       raise "not movable #{card}" unless movable?(card, move_to)
 
       card.move(move_to)
-      draw(1)
+
+      discard_cards = []
+      (0...fields.size - 1).each do |n|
+        next if fields[n].children.empty? || fields[n + 1].children.empty?
+        if fields[n][0].number == fields[n + 1][0].number
+          discard_cards << fields[n][0]
+          discard_cards << fields[n + 1][0]
+        end
+      end
+      discard_cards.uniq.each do |c|
+        c.move(pile)
+      end
+
+      unless stack.empty?
+        draw(1)
+      end
     end
 
     def _do_reset(cmd)
@@ -105,6 +120,9 @@ module Dummy
       cards.each do |c|
         c.move(stack)
         stack.children.shuffle!(@rand)
+      end
+      stack.children.take(40).each do |c|
+        c.move(pile)
       end
       @board.state = :start
     end
@@ -122,9 +140,11 @@ module Dummy
       card = _ids(card_id)
       move_to = _ids(move_to_id)
 
+      p [card, move_to]
+
       return false if state != :playing
 
-      true
+      return fields.include?(move_to) && move_to.children.size <= 0
     end
 
     def trigger?(trigger)

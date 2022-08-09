@@ -102,6 +102,14 @@ module Game
       @children[idx]
     end
 
+    def empty?
+      @children.empty?
+    end
+
+    def size
+      @children.size
+    end
+
     def _render
       out = { id: @id, **render, cls: self.class.name }
       if render_children? && !children.empty?
