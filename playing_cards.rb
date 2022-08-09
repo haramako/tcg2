@@ -1,5 +1,5 @@
 class PlayingCard < Game::Entity
-  attr_accessor :selected
+  attr_accessor :selected, :reversed
   attr_reader :suit, :number, :name
 
   SUITS = [:heart, :spade, :crover, :dia]
@@ -27,6 +27,7 @@ class PlayingCard < Game::Entity
     @number = number
     @name = "#{SUIT_NAME[@suit]}#{NUMBER_NAMES[number]}"
     @selected = false
+    @reversed = false
   end
 
   def render
@@ -60,8 +61,9 @@ class PlayingCard < Game::Entity
   end
 
   def redraw(view)
+    reversed = parent.name == :stack || parent.name == :pile
     c = view.create("Card", @id)
-    c.redraw(@name)
-    c.move_to(@pos[0], @pos[1], 1.0)
+    c.redraw(@name, @selected, reversed)
+    c.move_to(@pos[0], @pos[1], 0.3)
   end
 end

@@ -98,6 +98,10 @@ module Game
       @board.move_entity(self, new_parent)
     end
 
+    def [](idx)
+      @children[idx]
+    end
+
     def _render
       out = { id: @id, **render, cls: self.class.name }
       if render_children? && !children.empty?
@@ -105,6 +109,8 @@ module Game
       end
       out
     end
+
+    # Virtual functions
 
     def render_children?
       true
@@ -150,7 +156,11 @@ module Game
     end
 
     def redraw(view)
-      children.each.with_index do |c, i|
+      c = view.create("PlaceHolder", @id)
+      c.redraw(@name.to_s, false, false)
+      c.move_to(@pos[0], @pos[1], 0.3)
+
+      @children.each.with_index do |c, i|
         c.pos = [pos[0] + slide[0] * i, pos[1] + slide[1] * i]
       end
     end

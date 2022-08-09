@@ -1,5 +1,21 @@
+class Array
+  def shuffle(rand = Random)
+    self.clone.shuffle!(rand)
+  end
+
+  def shuffle!(rand = Random)
+    len = self.size
+    len.times do |n|
+      idx = rand.rand(self.size - n)
+      self[idx], self[len - n - 1] = self[len - n - 1], self[idx]
+    end
+    self
+  end
+end
+
 class PokerBoard < Game::Board
-  attr_accessor :cur_player, :state
+  attr_accessor :cur_player
+  attr_accessor :state # :start, :drawing, :bet, :finished
   attr_reader :stack, :pile, :hands, :cards
 
   def initialize
@@ -16,12 +32,12 @@ class PokerBoard < Game::Board
     @state = :start
 
     @stack.pos = [-300, 0]
-    @stack.slide = [1, -1]
+    @stack.slide = [-1, 1]
     @pile.pos = [300, 0]
     @hands[0].pos = [0, -240]
-    @hands[0].slide = [30, 0]
+    @hands[0].slide = [110, 0]
     @hands[1].pos = [0, 240]
-    @hands[1].slide = [30, 0]
+    @hands[1].slide = [110, 0]
   end
 
   def change_player
@@ -32,17 +48,26 @@ end
 class PokerRule
   attr_reader :board, :hands, :stack, :cards, :pile
 
-  def initialize
+  def initialize(rand = Random.new)
+    @rand = rand
     @board = PokerBoard.new
     @matcher = PokerMatcher.new
+    @stack = @board.stack
+    @hands = @board.hands
+    @cards = @board.cards
+    @pile = @board.pile
   end
 
   def play(cmd)
-    p cmd
     self.send(:"_do_#{cmd.type}", cmd)
   end
 
+  #=========================================
+  # Process commands
+  #=========================================
+
   def _do_start(cmd)
+    validate_state(:start)
     5.times {
       draw(0)
       draw(1)
@@ -53,32 +78,86 @@ class PokerRule
 
   def _do_select(cmd)
     validate_state(:drawing)
+    raise "not selectable #{card}" unless selectable?(cmd.card)
+
     card = _ids(cmd.card)
     card.selected = !card.selected
   end
 
   def _do_discard(cmd)
     validate_state(:drawing)
-    hand = @board.hands[@board.cur_player]
+    hand = hands[cur_player]
     discading_cards = hand.children.select { |c| c.selected }
     discading_cards.each do |card|
       if card.selected
         card.selected = false
-        card.move(@board.pile)
+        card.move(pile)
       end
     end
     draw(@board.cur_player, discading_cards.size)
-    if @board.cur_player == 0
+    if cur_player == 0
       @board.change_player
     else
       @board.state = :bet
     end
   end
 
+  def _do_bet(cmd)
+    validate_state(:bet)
+    r1 = match(hands[0].children)
+    r2 = match(hands[1].children)
+    @board.state = :finished
+    [r1, r2]
+  end
+
   def _do_reset(cmd)
-    @cards.each do |c|
-      c.move(board.stack)
+    cards.each do |c|
+      c.move(stack)
+      stack.children.shuffle!(@rand)
     end
+    @board.state = :start
+  end
+
+  #=========================================
+  # Status
+  #=========================================
+
+  def selectable?(card_id)
+    if state == :drawing
+      card = @board.entities[card_id]
+      hands[cur_player].children.include?(card)
+    else
+      false
+    end
+  end
+
+  def trigger?(trigger)
+    trigger = trigger.intern
+
+    return true if trigger == :reset
+
+    case state
+    when :start
+      trigger == :start
+    when :drawing
+      trigger == :discard
+    when :bet
+      trigger == :bet
+    else
+      false
+    end
+  end
+
+  #=========================================
+  # Utilities
+  #=========================================
+
+  def state
+    @board.state
+  end
+
+  def cur_player
+    @board.cur_player
   end
 
   def validate_state(*state_list)
@@ -113,7 +192,7 @@ class PokerRule
 end
 
 class PokerMatcher
-  HANDS_ORDER = [:pair, :two_pairs, :threecards, :straight, :flush, :straight_flush, :fourcards, :fivecards]
+  HANDS_ORDER = [:pair, :two_pairs, :threecards, :straight, :flush, :fullhouse, :straight_flush, :fourcards, :fivecards]
 
   def initialize
   end
@@ -165,7 +244,11 @@ class PokerMatcher
     elsif g[0][1] == 4
       [:fourcards, [power_of_number]]
     elsif g[0][1] == 3
-      [:threecards, [power_of_number]]
+      if g[1][1] == 2
+        [:fullhouse, [power_of_number]]
+      else
+        [:threecards, [power_of_number]]
+      end
     elsif g[0][1] == 2
       power_of_suit = g[0][2].max_by { |c| c.power_of_suit }.power_of_suit
       if g[1][1] == 2
