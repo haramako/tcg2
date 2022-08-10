@@ -73,8 +73,8 @@ public class MainScene : MonoSingleton<MainScene>
 
         mrb.Run("require 'app'");
 
-        r = mrb.Run("Dummy::DummyRule.new");
-        //r = mrb.Run("PokerRule.new");
+        //r = mrb.Run("Dummy::DummyRule.new");
+        r = mrb.Run("PokerRule.new");
         Game = r;
 
         Play(new Command("reset"));

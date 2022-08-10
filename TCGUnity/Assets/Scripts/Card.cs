@@ -22,13 +22,13 @@ public class Card : BoardObject
     public void Redraw(string name, bool selected)
     {
         //NameText.text = name;
-#if false
-        Image.color = selected ? new Color(1.0f, 0.7f, 0.7f) : Color.white;
-#endif
+        var col = selected ? new Color(1.0f, 0.7f, 0.7f) : Color.white;
+        material.color = col;
 
         var rect = getTextureRect(name);
         material.mainTextureOffset = new Vector2(rect.x, rect.y);
         material.mainTextureScale = new Vector2(rect.width, rect.height);
+
     }
 
     public void Awake()
@@ -42,15 +42,6 @@ public class Card : BoardObject
         var rect = getTextureRect("J");
         reverseMaterial.mainTextureOffset = new Vector2(rect.x, rect.y);
         reverseMaterial.mainTextureScale = new Vector2(rect.width, rect.height);
-    }
-
-    public void OnClick()
-    {
-        var selectable = MainScene.Instance.Game.x("selectable?", ObjectID).AsBool();
-        if (selectable)
-        {
-            MainScene.Instance.Play(new Command("select") { Card = ObjectID });
-        }
     }
 
     Rect getTextureRect(string name)

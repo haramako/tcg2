@@ -57,7 +57,7 @@ public class MouseCapture : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         var found = raycast(data.position);
         if (found)
         {
-            Debug.Log($"PointerDown found {found} {draggingObject}");
+            //Debug.Log($"PointerDown found {found} {draggingObject}");
             var movable = MainScene.Instance.Game.x("movable?", found.ObjectID).AsBool();
             if (movable)
             {
@@ -66,6 +66,14 @@ public class MouseCapture : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
                 startPositionOnBoard = boardPoint(data.position);
                 startPos = found.transform.position;
                 draggingObject = found;
+            }
+            else
+            {
+                var selectable = MainScene.Instance.Game.x("selectable?", found.ObjectID).AsBool();
+                if (selectable)
+                {
+                    MainScene.Instance.Play(new Command("select") { Card = found.ObjectID });
+                }
             }
         }
     }
@@ -114,7 +122,7 @@ public class MouseCapture : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
 
         if (found != null)
         {
-            Debug.Log($"Drag on {found.gameObject}");
+            //Debug.Log($"Drag on {found.gameObject}");
 
             var movable = MainScene.Instance.Game.x("movable_to?", obj.ObjectID, found.ObjectID).AsBool();
             if (movable)
@@ -127,7 +135,7 @@ public class MouseCapture : MonoBehaviour, IDragHandler, IBeginDragHandler, IEnd
         dragTemporaryDisabled = true;
         obj.transform.DOLocalMove(startPos, 0.3f).AsyncWaitForCompletion().ContinueWith(n =>
         {
-            Debug.Log("OK");
+            //Debug.Log("OK");
             dragTemporaryDisabled = false;
         });
     }

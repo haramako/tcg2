@@ -1,17 +1,6 @@
-class Array
-  def shuffle(rand = Random)
-    self.clone.shuffle!(rand)
-  end
-
-  def shuffle!(rand = Random)
-    len = self.size
-    len.times do |n|
-      idx = rand.rand(self.size - n)
-      self[idx], self[len - n - 1] = self[len - n - 1], self[idx]
-    end
-    self
-  end
-end
+require "./util"
+require "./game"
+require "./playing_cards"
 
 class PokerBoard < Game::Board
   attr_accessor :cur_player
@@ -31,13 +20,20 @@ class PokerBoard < Game::Board
     @cur_player = 0
     @state = :start
 
-    @stack.pos = [-300, 0]
-    @stack.slide = [-1, 1]
-    @pile.pos = [300, 0]
-    @hands[0].pos = [0, -240]
-    @hands[0].slide = [110, 0]
-    @hands[1].pos = [0, 240]
-    @hands[1].slide = [110, 0]
+    @stack.pos = [-300, 0, 0]
+    @stack.base = [0, 0.1, 0]
+    @stack.slide = [0, 0.1, 0]
+    @pile.pos = [300, 0, 0]
+    @pile.base = [0, 0.1, 0]
+    @pile.slide = [0, 0.1, 0]
+    @hands[0].pos = [0, 0, -140]
+    @hands[0].base = [0, 0.1, 0]
+    @hands[0].slide = [90, 0, 0]
+    @hands[0].layout_center = true
+    @hands[1].pos = [0, 0, 140]
+    @hands[1].base = [0, 0.1, 0]
+    @hands[1].slide = [90, 0, 0]
+    @hands[1].layout_center = true
   end
 
   def change_player
@@ -129,6 +125,14 @@ class PokerRule
     else
       false
     end
+  end
+
+  def movable?(card_id)
+    return false
+  end
+
+  def movable_to?(card_id, move_to_id)
+    return false
   end
 
   def trigger?(trigger)

@@ -1,20 +1,6 @@
+require "./util"
 require "./game"
 require "./playing_cards"
-
-class Array
-  def shuffle(rand = Random)
-    self.clone.shuffle!(rand)
-  end
-
-  def shuffle!(rand = Random)
-    len = self.size
-    len.times do |n|
-      idx = rand.rand(self.size - n)
-      self[idx], self[len - n - 1] = self[len - n - 1], self[idx]
-    end
-    self
-  end
-end
 
 module Dummy
   class DummyBoard < Game::Board
@@ -28,7 +14,7 @@ module Dummy
       @fields = []
       7.times do |i|
         f = Game::PlaceHolder.new(self, :"field#{i}")
-        f.pos = [-400 + i * 130, 0, 0]
+        f.pos = [-300 + i * 100, 0, 0]
         f.base = [0, 1, 0]
         @fields << f
       end
@@ -41,17 +27,17 @@ module Dummy
 
       @state = :start
 
-      @stack.pos = [-300, 0, 200]
-      @stack.base = [0, 1, 0]
-      @stack.slide = [0, 1, 0]
+      @stack.pos = [-120, 0, 160]
+      @stack.base = [0, 0.1, 0]
+      @stack.slide = [0, 0.1, 0]
 
-      @pile.pos = [300, 0, 200]
-      @pile.base = [0, 1, 0]
-      @pile.slide = [0, 1, 0]
+      @pile.pos = [120, 0, 160]
+      @pile.base = [0, 0.1, 0]
+      @pile.slide = [0, 0.1, 0]
 
-      @hands.pos = [0, 0, -240]
-      @hands.base = [0, 1, 0]
-      @hands.slide = [110, 0, 0]
+      @hands.pos = [0, 0, -140]
+      @hands.base = [0, 0.1, 0]
+      @hands.slide = [90, 0, 0]
       @hands.layout_center = true
     end
   end
