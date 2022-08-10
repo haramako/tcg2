@@ -82,7 +82,7 @@ module Game
     attr_accessor :pos
 
     def initialize(board, is_root = false)
-      @pos = [0, 0]
+      @pos = [0, 0, 0]
       @board = board
       @children = []
       if is_root
@@ -142,13 +142,15 @@ module Game
   class PlaceHolder < Entity
     attr_reader :name, :is_stack
 
-    attr_accessor :slide
+    attr_accessor :slide, :base, :layout_center
 
     def initialize(board, name, is_stack: false)
       super board
       @name = name
       @is_stack = is_stack
-      @slide = [0, 0]
+      @slide = [0, 0, 0]
+      @base = [0, 0, 0]
+      @layout_center = false
     end
 
     def render_children?
@@ -165,11 +167,19 @@ module Game
 
     def redraw(view)
       c = view.create("PlaceHolder", @id)
-      c.redraw(@name.to_s, false, false)
-      c.move_to(@pos[0], @pos[1], 0.3)
+      c.redraw(@name.to_s, false)
+      c.move_to(@pos[0], @pos[1], @pos[2], false, 0.3)
+
+      if @layout_center
+        base[0] = -(slide[0] * (@children.size - 1) / 2)
+      end
 
       @children.each.with_index do |c, i|
-        c.pos = [pos[0] + slide[0] * i, pos[1] + slide[1] * i]
+        c.pos = [
+          base[0] + pos[0] + slide[0] * i,
+          base[1] + pos[1] + slide[1] * i,
+          base[2] + pos[2] + slide[2] * i,
+        ]
       end
     end
   end

@@ -63,7 +63,7 @@ class PlayingCard < Game::Entity
   def redraw(view)
     reversed = parent.name == :stack || parent.name == :pile
     c = view.create("Card", @id)
-    c.redraw(@name, @selected, reversed)
-    c.move_to(@pos[0], @pos[1], 0.3)
+    c.redraw(@name, @selected)
+    c.move_to(@pos[0], @pos[1], @pos[2], reversed, 0.3)
   end
 end

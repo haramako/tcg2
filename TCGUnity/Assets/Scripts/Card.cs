@@ -15,31 +15,33 @@ public class Card : BoardObject
     //public Image Image;
     //public Image CardImage;
     public MeshRenderer CardPlane;
+    public MeshRenderer ReversePlane;
     private Material material;
+    private Material reverseMaterial;
 
-    public void Redraw(string name, bool selected, bool reversed)
+    public void Redraw(string name, bool selected)
     {
         //NameText.text = name;
 #if false
         Image.color = selected ? new Color(1.0f, 0.7f, 0.7f) : Color.white;
 #endif
 
-        if (reversed)
-        {
-            //Image.sprite = MainScene.Instance.CardAtlas.GetSprite("card_list_2d_54");
-        }
-        else
-        {
-            var rect = getTextureRect(name);
-            material.mainTextureOffset = new Vector2(rect.x, rect.y);
-            material.mainTextureScale = new Vector2(rect.width, rect.height);
-        }
+        var rect = getTextureRect(name);
+        material.mainTextureOffset = new Vector2(rect.x, rect.y);
+        material.mainTextureScale = new Vector2(rect.width, rect.height);
     }
 
     public void Awake()
     {
         material = Instantiate<Material>(CardPlane.material);
         CardPlane.material = material;
+
+        reverseMaterial = Instantiate<Material>(ReversePlane.material);
+        ReversePlane.material = reverseMaterial;
+
+        var rect = getTextureRect("J");
+        reverseMaterial.mainTextureOffset = new Vector2(rect.x, rect.y);
+        reverseMaterial.mainTextureScale = new Vector2(rect.width, rect.height);
     }
 
     public void OnClick()
@@ -58,7 +60,8 @@ public class Card : BoardObject
         //j = 52,53
         //— =54~
         int idx;
-        if (name != "J") {
+        if (name != "J")
+        {
             var suit = name[0];
             var num = name.Substring(1);
             int numNum = 0;
@@ -117,7 +120,7 @@ public class Card : BoardObject
         float y = idx / 10;
 
         float u = x * (204 / 2048.0f);
-        float v = 1.0f - y * (288 / 2048.0f);
+        float v = 1.0f - (y + 1) * (288 / 2048.0f);
         float w = 204 / 2048.0f;
         float h = 288 / 2048.0f;
         return new Rect(u, v, w, h);

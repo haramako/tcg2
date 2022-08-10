@@ -11,11 +11,15 @@ public class BoardObject : MonoBehaviour
     [HideInInspector]
     public int ObjectID;
 
-    public void MoveTo(float x, float y, float duration)
+    public void MoveTo(float x, float y, float z, bool reversed, float duration)
     {
         transform.SetAsLastSibling();
         float scale = 1 / 1280.0f;
-        transform.DOLocalMove(new Vector3(x*scale, 0, y*scale), duration);
+        transform.DOLocalMove(new Vector3(x*scale, y*scale, z*scale), duration);
+
+        float rot = reversed ? 180 : 0;
+        transform.DOLocalRotate(new Vector3(0, 0, rot), duration);
+
     }
 }
 

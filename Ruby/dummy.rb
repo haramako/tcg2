@@ -28,7 +28,8 @@ module Dummy
       @fields = []
       7.times do |i|
         f = Game::PlaceHolder.new(self, :"field#{i}")
-        f.pos = [-400 + i * 130, 0]
+        f.pos = [-400 + i * 130, 0, 0]
+        f.base = [0, 1, 0]
         @fields << f
       end
       @hands = Game::PlaceHolder.new(self, :hands)
@@ -40,13 +41,18 @@ module Dummy
 
       @state = :start
 
-      @stack.pos = [-300, 200]
-      @stack.slide = [-1, 1]
+      @stack.pos = [-300, 0, 200]
+      @stack.base = [0, 1, 0]
+      @stack.slide = [0, 1, 0]
 
-      @pile.pos = [300, 200]
+      @pile.pos = [300, 0, 200]
+      @pile.base = [0, 1, 0]
+      @pile.slide = [0, 1, 0]
 
-      @hands.pos = [-320, -240]
-      @hands.slide = [110, 0]
+      @hands.pos = [0, 0, -240]
+      @hands.base = [0, 1, 0]
+      @hands.slide = [110, 0, 0]
+      @hands.layout_center = true
     end
   end
 
@@ -87,7 +93,7 @@ module Dummy
       validate_state(:playing)
       card = _ids(cmd.card)
       move_to = _ids(cmd.move_to)
-      raise "not movable #{card}" unless movable?(card, move_to)
+      raise "not movable #{card}" unless movable_to?(card, move_to)
 
       card.move(move_to)
 
@@ -133,7 +139,15 @@ module Dummy
       end
     end
 
-    def movable?(card_id, move_to_id)
+    def movable?(card_id)
+      card = _ids(card_id)
+
+      return false if state != :playing
+
+      return hands.children.include?(card)
+    end
+
+    def movable_to?(card_id, move_to_id)
       card = _ids(card_id)
       move_to = _ids(move_to_id)
 
@@ -179,7 +193,7 @@ module Dummy
 
     def draw(num = 1)
       num.times do
-        stack.children.first.move(hands)
+        stack.children.last.move(hands)
       end
     end
   end

@@ -13,7 +13,7 @@ public class PlaceHolder : BoardObject
     //public Image Image;
     //public Image CardImage;
 
-    public void Redraw(string name, bool selected, bool reversed)
+    public void Redraw(string name, bool selected)
     {
         //NameText.text = name;
         //Image.color = selected ? new Color(1.0f, 0.7f, 0.7f) : Color.white;

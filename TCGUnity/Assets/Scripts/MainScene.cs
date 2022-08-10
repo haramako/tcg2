@@ -48,7 +48,6 @@ public class MainScene : MonoSingleton<MainScene>
 
     void Start()
     {
-        //testBoard();
         run();
     }
 
@@ -80,15 +79,6 @@ public class MainScene : MonoSingleton<MainScene>
 
         Play(new Command("reset"));
         Play(new Command("start"));
-    }
-
-    void testBoard()
-    {
-        var c1 = (Card)View.Create("Card", 3);
-        c1.MoveTo(100, 100, 1.0f);
-        //c1.transform.localPosition = new Vector3(100, -100, 0);
-
-        //c1.transform.DOLocalMoveX(200, 1.0f).SetEase(Ease.OutBounce);
     }
 
     public Value Play(Command cmd)
