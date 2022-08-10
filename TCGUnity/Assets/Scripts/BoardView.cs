@@ -8,12 +8,14 @@ using DG.Tweening;
 [CustomMRubyClass]
 public class BoardObject : MonoBehaviour
 {
+    [HideInInspector]
     public int ObjectID;
 
     public void MoveTo(float x, float y, float duration)
     {
         transform.SetAsLastSibling();
-        transform.DOLocalMove(new Vector3(x, y, 0), duration);
+        float scale = 1 / 1280.0f;
+        transform.DOLocalMove(new Vector3(x*scale, 0, y*scale), duration);
     }
 }
 
@@ -42,7 +44,7 @@ public class BoardView : MonoBehaviour
 
         var template = Templates.First(t => t.name == templateName);
         var obj = GameObject.Instantiate(template.gameObject);
-        obj.transform.SetParent(transform, false);
+        //obj.transform.SetParent(transform, false);
         obj.name = $"{templateName}:{id}";
 
         bobj = obj.GetComponent<BoardObject>();

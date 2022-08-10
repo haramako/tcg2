@@ -45,7 +45,7 @@ module Dummy
 
       @pile.pos = [300, 200]
 
-      @hands.pos = [-400, -240]
+      @hands.pos = [-320, -240]
       @hands.slide = [110, 0]
     end
   end

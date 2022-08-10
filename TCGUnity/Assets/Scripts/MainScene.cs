@@ -66,7 +66,7 @@ public class MainScene : MonoSingleton<MainScene>
 
         var opt = new VMOption()
         {
-            LoadPath = new string[] { "../tcg2" },
+            LoadPath = new string[] { "../Ruby" },
         };
         mrb = new VM(opt);
 
