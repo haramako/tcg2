@@ -121,9 +121,6 @@ module Dummy
         c.move(stack)
         stack.children.shuffle!(@rand)
       end
-      stack.children.take(40).each do |c|
-        c.move(pile)
-      end
       @board.state = :start
     end
 
@@ -139,8 +136,6 @@ module Dummy
     def movable?(card_id, move_to_id)
       card = _ids(card_id)
       move_to = _ids(move_to_id)
-
-      p [card, move_to]
 
       return false if state != :playing
 
@@ -189,6 +184,9 @@ module Dummy
     end
   end
 
+  #=========================================
+  # Commands for Test
+  #=========================================
   module Cmd
     def self.make_cmd(name, *rest)
       r = Struct.new(name, *rest)

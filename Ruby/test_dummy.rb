@@ -1,10 +1,12 @@
-require "./assert"
+$LOAD_PATH << "Ruby"
+
+require "assert"
 require "pp" if RUBY_ENGINE == "ruby"
 
-require "./dummy"
+require "dummy"
 include Dummy::Cmd
 
-assert("dummy matcher") do
+assert("dummy play") do
   game = Dummy::DummyRule.new
   b = game.board
 
