@@ -6,6 +6,9 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 [CustomMRubyClass]
 public class Command
@@ -39,6 +42,7 @@ public class MainScene : MonoSingleton<MainScene>
     public Button DiscardButton;
     public Button BetButton;
     public Canvas Canvas;
+    public UIDocument Doc;
 
     VM mrb;
 
@@ -48,12 +52,22 @@ public class MainScene : MonoSingleton<MainScene>
 
     void Start()
     {
+        //initUI();
         run();
+    }
+
+    void initUI()
+    {
+        var li = Doc.rootVisualElement.Q<ListView>("list");
+        var source = new string[] { "A", "B", "C" };
+        li.itemsSource = source;
+        li.makeItem = () => new Label();
+        li.bindItem = (v,i) => { ((Label)v).text = source[i]; };
     }
 
     private void Update()
     {
-        if( Input.GetKeyDown(KeyCode.F5))
+        if(Keyboard.current.f5Key.wasPressedThisFrame)
         {
             run();
         }
@@ -73,8 +87,8 @@ public class MainScene : MonoSingleton<MainScene>
 
         mrb.Run("require 'app'");
 
-        //r = mrb.Run("Dummy::DummyRule.new");
-        r = mrb.Run("PokerRule.new");
+        r = mrb.Run("Dummy::DummyRule.new");
+        //r = mrb.Run("PokerRule.new");
         Game = r;
 
         Play(new Command("reset"));

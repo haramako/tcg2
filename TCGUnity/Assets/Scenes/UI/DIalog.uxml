@@ -1,0 +1,47 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scenes/UI/Dialog.uss?fileID=7433441132597879392&amp;guid=b6ecf269abba8644389ff5ec8b3b5477&amp;type=3#Dialog" />
+    <ui:GroupBox vertical-scroller-visibility="Hidden" class="dialog" style="width: 1920px; height: 1080px; left: 50%; top: 50%; margin-left: -960px; margin-top: -540px; flex-direction: row;">
+        <ui:GroupBox class="dialog-body" style="width: 600px;">
+            <ui:GroupBox style="flex-direction: row;">
+                <ui:Label text="Label" />
+                <ui:Label text="Label" />
+            </ui:GroupBox>
+            <ui:Button text="Button" class="align-center" />
+            <ui:Toggle label="Toggle" value="true" class="w500" />
+            <ui:RadioButton label="Radio Button" />
+            <ui:DropdownField label="Dropdown" index="-1" choices="hoge,fuga,piyo" />
+            <ui:Slider picking-mode="Ignore" label="Slider" value="42" high-value="100" />
+            <ui:SliderInt picking-mode="Ignore" label="SliderInt" value="42" high-value="100" />
+            <ui:Foldout text="Foldout">
+                <ui:Label text="HOGE" />
+                <ui:Label text="FUGA" />
+            </ui:Foldout>
+            <ui:ProgressBar title="my-progress" class="m50" />
+        </ui:GroupBox>
+        <ui:GroupBox class="dialog-body" style="width: 1200px;">
+            <ui:GroupBox class="span">
+                <ui:Label text="Inline Button" class="w200 align-right" />
+                <ui:Button text="Middle" class="inline btn-middle" />
+                <ui:Button text="MiddleMiddleMiddle" class="inline btn-middle" />
+                <ui:Button text="Large" class="inline btn-large" />
+            </ui:GroupBox>
+            <ui:GroupBox class="span">
+                <ui:Label text="Inline Items" class="w200 align-right" />
+                <ui:DropdownField label="Dropdown" index="1" choices="hoge,fuga,piyo" />
+                <ui:ProgressBar title="my-progress" class="inline w250" />
+            </ui:GroupBox>
+            <ui:GroupBox class="span">
+                <ui:Label text="Text Field" class="w200 align-right" />
+                <ui:TextField class="w200" />
+            </ui:GroupBox>
+            <ui:ListView name="list" fixed-item-height="60" />
+        </ui:GroupBox>
+        <ui:GroupBox class="dialog-body" style="width: 600px;">
+            <ui:Label text="Label" />
+            <ui:Label text="Label" />
+            <ui:Label text="Label" />
+            <ui:Label text="Label" />
+            <ui:Label text="Label" />
+        </ui:GroupBox>
+    </ui:GroupBox>
+</ui:UXML>

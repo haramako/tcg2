@@ -18,7 +18,7 @@ assert("dummy play") do
 
   game.play Move[b.hands[0], b.fields[0]]
 
-  b.dump
+  # b.dump
 
   game.play Reset[]
 end
