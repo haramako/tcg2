@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style
+        src="project://database/Assets/Scenes/UI/Dialog.uss?fileID=7433441132597879392&amp;guid=b6ecf269abba8644389ff5ec8b3b5477&amp;type=3#Dialog" />
+    <ui:GroupBox class="dialog dialog-body"
+        style="width: 1000px; height: 800px; left: 50%; top: 50%; margin-left: -500px; margin-top: -400px; align: center; align-items: center;">
+        <ui:Label text="カードを選んでください" />
+        <ui:ScrollView style="width: 100%;">
+            <ui:GroupBox name="card-list" class="span" style="flex-wrap: wrap;">
+            </ui:GroupBox>
+        </ui:ScrollView>
+        <ui:GroupBox class="span">
+            <ui:Button name="close-button" text="Close" class="inline btn-middle" />
+            <ui:Button name="cancel-button" text="Select" class="inline btn-middle" />
+        </ui:GroupBox>
+    </ui:GroupBox>
+</ui:UXML>

@@ -44,6 +44,10 @@ public class MainScene : MonoSingleton<MainScene>
     public Canvas Canvas;
     public UIDocument Doc;
 
+    public VisualTreeAsset CardListDialog;
+    public VisualTreeAsset CardElement;
+    public PanelSettings DefaultPanelSettings;
+
     VM mrb;
 
     public Value Game { get; private set; }
@@ -62,14 +66,77 @@ public class MainScene : MonoSingleton<MainScene>
         var source = new string[] { "A", "B", "C" };
         li.itemsSource = source;
         li.makeItem = () => new Label();
-        li.bindItem = (v,i) => { ((Label)v).text = source[i]; };
+        li.bindItem = (v, i) => { ((Label)v).text = source[i]; };
     }
 
     private void Update()
     {
-        if(Keyboard.current.f5Key.wasPressedThisFrame)
+        if (Keyboard.current.f5Key.wasPressedThisFrame)
         {
             run();
+        }
+
+        if (Keyboard.current.f1Key.wasPressedThisFrame)
+        {
+            openDialog();
+        }
+    }
+
+    private UIDocument dialogDoc;
+
+    void openDialog()
+    {
+        var dialog = new GameObject("Dialog");
+        var doc = dialog.AddComponent<UIDocument>();
+        dialogDoc = doc;
+        doc.panelSettings = DefaultPanelSettings;
+        doc.visualTreeAsset = CardListDialog;
+
+        var root = doc.rootVisualElement;
+
+        // Adjust scroll speed.
+        // See: https://forum.unity.com/threads/listview-mousewheel-scrolling-speed.1167404/
+        var factor = 300.0f;
+        ScrollView scrollView;
+        scrollView = doc.rootVisualElement.Q<ScrollView>();
+        scrollView.RegisterCallback<WheelEvent>((evt) =>
+        {
+            scrollView.scrollOffset = new Vector2(0, scrollView.scrollOffset.y + factor * evt.delta.y);
+            evt.StopPropagation();
+        });
+
+        root.RegisterCallback<ClickEvent>(onClicked);
+
+        var list = root.Q("card-list");
+
+        for (int i = 0; i < 30; i++)
+        {
+            var newCard = CardElement.Instantiate();
+            newCard.name = $"card:{i}";
+            newCard.userData = $"card:{i}";
+            var img = newCard.Q<UnityEngine.UIElements.Image>();
+            img.sprite = CardAtlas.GetSprite($"card_list_2d_{i}");
+            list.Add(newCard);
+        }
+
+    }
+    void onClicked(ClickEvent e)
+    {
+        Debug.Log($"{e.bubbles} {e.tricklesDown} {e.target}");
+        var element = e.target as VisualElement;
+        switch (element.name)
+        {
+            case "close-button":
+            case "cancel-button":
+                Destroy(dialogDoc.gameObject);
+                dialogDoc = null;
+                break;
+            default:
+                {
+                    var data = element.FindAncestorUserData();
+                    Debug.Log(data);
+                }
+                break;
         }
     }
 

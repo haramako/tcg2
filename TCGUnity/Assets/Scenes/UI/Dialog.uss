@@ -63,6 +63,14 @@
     width: 800px;
 }
 
+.m5 {
+    margin: 5px;
+}
+
+.m10 {
+    margin: 10px;
+}
+
 .m50 {
     margin-top: 50px;
     margin-bottom: 50px;
@@ -80,4 +88,24 @@
     -unity-text-align: middle-right;
     width: 200px;
     margin-right: 20px;
+}
+
+.card {
+    width: 120px;
+    height: 180px;
+}
+
+.card__img {
+    width: 120px;
+    height: 180px;
+    background-color: black;
+}
+
+.card__title {
+    position: absolute;
+    top: 4px;
+}
+
+:root {
+    --unity-metrics-single_line-height: 500px;
 }

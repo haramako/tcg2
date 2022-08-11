@@ -48,7 +48,7 @@ public class BoardView : MonoBehaviour
 
         var template = Templates.First(t => t.name == templateName);
         var obj = GameObject.Instantiate(template.gameObject);
-        //obj.transform.SetParent(transform, false);
+        obj.transform.SetParent(null, false);
         obj.name = $"{templateName}:{id}";
 
         bobj = obj.GetComponent<BoardObject>();

@@ -3,6 +3,16 @@ require "./game"
 require "./playing_cards"
 
 module Dummy
+  class PlaceHolderEx < Game::PlaceHolder
+    def redraw(view)
+      super view
+      @text_id ||= @board.new_id
+      c = view.create("TextBlock", @text_id)
+      c.move_to(@pos[0], @pos[1] + 5, @pos[2] + 1, false, 0)
+      c.redraw(@children.size.to_s)
+    end
+  end
+
   class DummyBoard < Game::Board
     attr_accessor :state # :start, :drawing, :bet, :finished
     attr_reader :stack, :pile, :hands, :cards, :fields

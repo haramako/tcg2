@@ -74,6 +74,10 @@ module Game
       @root.children << entity
       id
     end
+
+    def new_id
+      @next_entity_id += 1
+    end
   end
 
   class Entity
@@ -180,6 +184,13 @@ module Game
           base[1] + pos[1] + slide[1] * i,
           base[2] + pos[2] + slide[2] * i,
         ]
+      end
+
+      if @is_stack
+        @text_id ||= @board.new_id
+        c = view.create("TextBlock", @text_id)
+        c.move_to(@pos[0], @pos[1] + 5, @pos[2] + 1, false, 0)
+        c.redraw(@children.size.to_s)
       end
     end
   end
