@@ -51,6 +51,7 @@ public class MainScene : MonoSingleton<MainScene>
     VM mrb;
 
     public Value Game { get; private set; }
+    public Value Fiber { get; private set; }
 
     public VM Mrb => mrb;
 
@@ -157,16 +158,29 @@ public class MainScene : MonoSingleton<MainScene>
         r = mrb.Run("Dummy::DummyRule.new");
         //r = mrb.Run("PokerRule.new");
         Game = r;
+        Debug.Log("Create  Game");
+        Fiber = mrb.Run("Kernel").x("start_fiber", Game);
+        Debug.Log("Create Fiber");
 
         Play(new Command("reset"));
+        Debug.Log("Send reset");
         Play(new Command("start"));
     }
 
     public Value Play(Command cmd)
     {
-        var result = Game.x("play", cmd);
+        //var result = Game.x("play", cmd);
+
+        var ary = mrb.Run("[]");
+        ary.x("append", "play");
+        ary.x("append", cmd);
+
+        var kernel = mrb.LoadString("Kernel");
+        var result = kernel.x("fiber_resume", Fiber, ary);
+
         Game.x("board").x("root").x("redraw_all", View);
         redraw();
+
         return result;
     }
 

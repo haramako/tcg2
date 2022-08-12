@@ -2,6 +2,29 @@ require "./util"
 require "./game"
 require "./playing_cards"
 
+def start_fiber(rule)
+  fiber = Fiber.new do
+    result = nil
+    while true
+      param = Fiber.resume(result)
+      param = Fiber.yield(result)
+      break if param.nil?
+      case param[0]
+      when "play"
+        result = rule.play(param[1])
+      else
+        raise "invalid fiber param #{param}"
+      end
+    end
+  end
+  fiber
+end
+
+# MEMO: fiber.resumeをC#から直接呼ぶと問題があるため、関数でラップしている
+def fiber_resume(f, args)
+  f.resume(args)
+end
+
 module Dummy
   class PlaceHolderEx < Game::PlaceHolder
     def redraw(view)

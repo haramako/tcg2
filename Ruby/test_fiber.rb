@@ -1,12 +1,19 @@
-f = Fiber.new do
-  puts 1
-  Fiber.yield(1)
-  puts 2
-  Fiber.yield(2)
+f = Fiber.new do |x1|
+  p [:fiber, x1]
+  x = Fiber.yield(1)
+  x = Fiber.resume(1)
+  p [:fiber, x]
+  Fiber.yield(x + 1)
 end
 
-puts f.resume
-puts f.resume
-puts f.alive?
-p f.resume
-puts f.alive?
+begin
+  puts "start"
+  puts f.resume(1)
+  puts f.resume(1)
+  puts f.alive?
+  p f.resume
+  puts f.alive?
+rescue => ex
+  p ex
+  f.resume(1)
+end
